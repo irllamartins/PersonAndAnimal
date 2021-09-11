@@ -1,3 +1,9 @@
+.history/
+venv/
+dev_venv/
+prod_venv/
+test_venv/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
