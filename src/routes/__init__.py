@@ -1,5 +1,5 @@
 from sanic import Blueprint
-from .device import DEVICES
-from .body_presence import BODY_PRESENCE
+from .people import PEOPLES
+from .animal import ANIMALS
 
-ROUTES_API=Blueprint.group(DEVICES,BODY_PRESENCE)
+ROUTES_API=Blueprint.group(PEOPLES, ANIMALS)

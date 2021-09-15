@@ -1,22 +1,23 @@
 from sanic.response import json, text
 from sanic import Blueprint
+from .people import peoples
 
-BODY_PRESENCE=Blueprint('body_presence')
-dispositivo={"cpf":'12312312',"id":0}
-dispositivos=[]
+ANIMALS=Blueprint('animal')
+#animal={"owner":"203.444.283-73","name":"bibi", "type":"dog"}
+animals=[]
 
-@BODY_PRESENCE.route('/bodypresence', methods=["GET"])
+@ANIMALS.route('/animals', methods=["GET"])
 async def get(request):
     return json({"message":"Not Implemented"}, status=501)
 
-@BODY_PRESENCE.route('/bodypresence',methods=["POST"])
+@ANIMALS.route('/animals',methods=["POST"])
 async def post(request):
     return json({"message":"Not Implemented"}, status=501)
 
-@BODY_PRESENCE.route('/bodypresence',methods=["PUT"])
+@ANIMALS.route('/animals',methods=["PUT"])
 async def put(request):
     return json({"message":"Not Implemented"}, status=501)
 
-@BODY_PRESENCE.route('/bodypresence',methods=["DELETE"])
+@ANIMALS.route('/animals',methods=["DELETE"])
 async def delete(request):
     return json({"message":"Not Implemented"}, status=501)
