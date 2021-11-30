@@ -1,31 +1,35 @@
-from flask import jsonify,request
+from flask import jsonify,request,Response
 from flask import Blueprint
 import re
 from ...infrastructure.database.connection.mongodb import db
 from bson import ObjectId
 from .person import person_collection
-animal_collection=db['animal']
+from src.infrastructure.repository.animal_repository import AnimalReposity
+import json
+
+#animal_collection=db['animal']
 
 ANIMALS=Blueprint('animal',__name__)
 animals=[]
 @ANIMALS.route('/person/<person_id>/animals', methods=["GET"])
 def getAll(person_id):
-    search=list(animal_collection.find())
+    search= AnimalReposity.find_all()
     result =[]
+    
     for animal in search:
         animal['_id']=str(animal['_id'])
+       
         if(animal['owner']==person_collection.find_one({'_id':ObjectId(person_id)})['cpf']):
             result.append(animal)
-    return jsonify(result),200
+    return Response(json.dumps(animal),status=200,content_type="application/json")
 
 @ANIMALS.route('/person/<person_id>/animals/<animal_id>', methods=["GET"])
 def get(person_id,animal_id):
     #print(animal_collection.find_one({'_id':ObjectId(animal_id)}))
-    if(animal_collection.find_one({'_id':ObjectId(animal_id)})['owner']==person_collection.find_one({'_id':ObjectId(person_id)})['cpf'] and animal_collection.find_one({'_id':ObjectId(animal_id)})['_id']):
-        animal= dict(animal_collection.find_one({'_id':ObjectId(animal_id)}))
-        animal['_id']=str(animal['_id'])
+    animal = AnimalReposity.find_by_id(person_id,animal_id)
+    if(animal!=None):
         return jsonify(animal),200
-    return {'mensage':'animal not found.'},404
+    return Response(status=200)
     
 @ANIMALS.route('/person/<person_id>/animals',methods=["POST"])  
 def post(person_id):
@@ -42,10 +46,9 @@ def post(person_id):
         for animal in animals:
             if animal['id_animal']==id_animal:
                 return jsonify({"message":"animal already exists"}, 409)"""
-        animal=dict(name = request.json['name'],owner = request.json['owner'],type=request.json['type'])
-        animal_collection.insert_one(animal)
-        animal['_id']=str(animal['_id'])
-        return jsonify(animal),201
+        animal = AnimalReposity.create()
+        Response(json.dumps(animal),status=201,content_type="application/json")
+
     return {"message":"must have name,owner and type."}, 400
 
 @ANIMALS.route('/person/<person_id>/animals/<animal_id>',methods=["PUT"])
@@ -64,14 +67,13 @@ def put(person_id,animal_id):
         print(animal)
         return jsonify(animal),200
 
-    return {'mensage':'animal not found.'},404
+    return Response(status=200)
     
 
 @ANIMALS.route('/person/<person_id>/animals/<animal_id>',methods=["DELETE"])
 def delete(person_id,animal_id):
 
-    if(animal_collection.find_one({'_id':ObjectId(animal_id)})['owner']==person_collection.find_one({'_id':ObjectId(person_id)})['cpf'] ):
+    if(AnimalReposity.delete_by_id(animal_id)!=0):
         animal_collection.delete_one({'_id':ObjectId(animal_id)})
-        return {'mensage':'animal deleted'},200
-        
-    return {'mensage':'animal not found.'},404
+        return {'mensage':'person deleted'},200
+    return Response(status=200)
