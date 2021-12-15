@@ -1,6 +1,7 @@
-from sanic import Sanic
-from src.routes import ROUTES_API
+from flask import Flask
+from src.main.routes import ROUTES_API
+from flask import Blueprint
 
-app = Sanic("api")
+app = Flask(__name__)
 
-app.blueprint(ROUTES_API)
+app.register_blueprint(ROUTES_API)

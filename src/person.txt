@@ -1,0 +1,78 @@
+from flask_restful import Resource,reqparse
+from flask import jsonify
+from flask import Blueprint
+
+PEOPLES=Blueprint('person',__name__)
+people=[
+    {
+       'id_person': '123',
+       'name': 'irlla',
+       'cpf':'12345',
+       'job': 'student'
+    },
+    {
+       'id_person': '183',
+       'name': 'isley',
+       'cpf':'12348',
+       'job': 'student'
+    },
+    {
+       'id_person': '444',
+       'name': 'joao',
+       'cpf':'12348',
+       'job': 'student'
+    }
+
+]
+class People(Resource):
+    def get(self):
+        return {'pessoas':people}
+
+class Person(Resource):
+    argumentos=reqparse.RequestParser()
+    argumentos.add_argument('nome')
+    argumentos.add_argument('cpf')
+    argumentos.add_argument('job')
+    @PEOPLES.route('/people', methods=["GET"])
+    def get(self,id_person):
+        for person in people:
+            if(person['id_person']==id_person):
+                return jsonify(person)
+        return {'mensage':'person not found.'},404
+    
+    @PEOPLES.route('/people',methods=["POST"])  
+    def post(self,id_person):
+        
+        dados=Person.argumentos.parse_args()
+
+        new_person={
+            'id_person':id_person,
+            'nome':dados['nome'],
+            'cpf':dados['cpf'],
+            'job':dados['job']
+
+        }
+        people.append(new_person)
+        return new_person,200
+
+    @PEOPLES.route('/people',methods=["PUT"])
+    def put(self,id_person):
+        dados=Person.argumentos.parse_args()
+        new_person={
+            'id_person':id_person,**dados
+        }
+        for person in people:
+            if(person['id_person']==id_person):             
+                person.update(new_person)
+                return new_person,200
+        people.append(new_person)
+        return new_person,201
+
+    @PEOPLES.route('/people',methods=["DELETE"])
+    def delete(self,id_person):
+        cont=0
+        for person in people:
+            if(person["id_person"]==id_person):
+                people.pop(cont)
+            cont+=1
+        return people
