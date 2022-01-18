@@ -7,6 +7,7 @@ import json
 from src.infrastructure.repository.person_repository import PersonReposity
 from src.application.services.person_services import Sevices
 from src.application.domain.models.person_model import PersonModel
+from src.presenters.controllers.person_controller import PersonController
 
 person_collection=db['person']
 PEOPLE=Blueprint('person',__name__)

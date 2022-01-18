@@ -1,0 +1,20 @@
+from pydantic import BaseModel, Field, StrictStr, validator
+from src.application.domain.utils import PyObjectId
+from typing import Optional
+class DeviceModel(BaseModel):
+    id: Optional[PyObjectId] = Field(alias="_id")
+    patient_id: PyObjectId
+    name: str
+    address: Optional[str] = Field(
+        None,
+        min_length=17,
+        max_length=17,
+        regex="[0-9A-F]{2}([-:]?)[0-9A-F]{2}(\\1[0-9A-F]{2}){4}$",
+    )
+    manufacturer: str = Field(..., min_length=4, max_length=30)
+    charge_level: Optional[float] = Field(0, ge=0, le=100)
+
+    class Config:
+        allow_population_by_field_name = True
+        arbitrary_types_allowed = True  # required for the _id
+        json_encoders = {ObjectId: str}

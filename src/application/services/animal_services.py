@@ -15,13 +15,17 @@ class Sevices:
             animal['_id']=str(animal['_id'])
             animals.append(animal)
         return animals
+
     def find_by_id(self,person_id,animal_id):
         animal=self.repository.find_by_id(person_id,animal_id)
         animal['_id']=str(animal['_id'])
         return animal
     
     def create(self,person_id):
-        animal=self.repository.create(person_id)
+        #by_alis vai pegar o _id e colocar no id
+        query=AnimalModel(**request.json).dict(by_alias=True,exclude={'id'})
+        #print(query)
+        animal=self.repository.create(query,person_id)
         if(animal!=None):
             animal['_id']=str(animal['_id'])
             return animal
@@ -29,16 +33,14 @@ class Sevices:
         return animal
     
     def put(self,person_id,animal_id):
-        update={}
-        if "job" in request.json:
-            update['type'] = request.json['type']
-        if "name" in request.json:
-            update['name'] = request.json['name'] 
-
-        animal=self.repository.put(person_id,animal_id,update)
-        animal['_id']=str(animal['_id'])
-        return animal
+        
+        update=AnimalModel(**request.json).dict(by_alias=True,exclude={'id'})
+        validation=self.repository.put(person_id,animal_id,update)
+        print("services:",validation)
+        return validation
     
     def delete(self,person_id,animal_id):
+
         animal = self.repository.delete_by_id(person_id,animal_id)
+        print(animal)
         return animal
